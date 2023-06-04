@@ -1,0 +1,12 @@
+#editor
+.idea
+
+#python
+**/*.pyc
+
+#django
+db.sqlite3
+.mypy_cache
+.pytest_cache
+__pycache__
+.coverage
