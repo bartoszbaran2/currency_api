@@ -127,7 +127,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379"
 
 CELERY_BEAT_SCHEDULE = {
     "test_func": {
-        "task": "currency.tasks.test_func",
-        "schedule": crontab(minute="*/1"),
+        "task": "currency.tasks.fetch_nbp_api_task",
+        "schedule": crontab(hour=12),
     },
 }
