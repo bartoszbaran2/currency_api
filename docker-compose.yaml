@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       target: development
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     env_file:
       - ./envs/backend.env
       - ./envs/postgres.env
@@ -11,11 +11,13 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - redis
     restart: on-failure
     volumes:
       - ./backend:/app
     networks:
       - postgres_network
+      - redis_network
 
   postgres:
     image: postgres:15.2
@@ -28,9 +30,48 @@ services:
     networks:
       - postgres_network
 
+  redis:
+      image: redis:alpine
+      ports:
+        - '6379:6379'
+      networks:
+        - redis_network
+
+  celery_worker:
+      build:
+        context: ./backend
+      command: sh -c 'sleep 10 && celery -A config worker --loglevel=info'
+      volumes:
+        - ./backend:/app
+      env_file:
+      - ./envs/backend.env
+      - ./envs/postgres.env
+      depends_on:
+        - redis
+      networks:
+        - redis_network
+        - postgres_network
+
+  celery_beat:
+      build:
+        context: ./backend
+      command: sh -c 'sleep 10 && celery -A config beat --loglevel=info'
+      volumes:
+        - ./backend:/app
+      env_file:
+      - ./envs/backend.env
+      - ./envs/postgres.env
+      depends_on:
+        - redis
+      networks:
+        - redis_network
+        - postgres_network
+
 volumes:
   postgres_volume:
 
 networks:
   postgres_network:
+    driver: bridge
+  redis_network:
     driver: bridge
