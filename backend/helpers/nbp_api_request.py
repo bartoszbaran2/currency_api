@@ -1,10 +1,10 @@
-import json
 import datetime
+import json
 import time
 from urllib import request, error
 
 
-def get_currencies_data_from_nbp_api(start_date, end_date):
+def get_currency_data_from_nbp_api(start_date, end_date):
     url = f"http://api.nbp.pl/api/exchangerates/tables/a/{start_date}/{end_date}"
 
     with request.urlopen(url) as response:
@@ -21,7 +21,7 @@ def fetch_all_currency_data(start_date, end_date):
         if next_end_date > end_date:
             next_end_date = end_date
 
-        data = get_currencies_data_from_nbp_api(start_date, next_end_date)
+        data = get_currency_data_from_nbp_api(start_date, next_end_date)
         all_data.extend(data)
 
         start_date = next_end_date + datetime.timedelta(days=1)

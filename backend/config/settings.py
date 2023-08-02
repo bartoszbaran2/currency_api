@@ -77,9 +77,17 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DB_CONNECTION_STRING = os.environ.get("DB_CONNECTION_STRING")
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
-DATABASES = {"default": dj_database_url.config(default=DB_CONNECTION_STRING)}
+DATABASE_URL = os.environ.get("DB_CONNECTION_STRING")
+db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500, ssl_require=False)
+
+DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -126,8 +134,8 @@ CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "redis://redis:6379"
 
 CELERY_BEAT_SCHEDULE = {
-    "test_func": {
+    "fetch_nbp_table_for_today": {
         "task": "currency.tasks.fetch_nbp_api_task",
-        "schedule": crontab(hour=12),
+        "schedule": crontab(hour="12", minute="16"),
     },
 }

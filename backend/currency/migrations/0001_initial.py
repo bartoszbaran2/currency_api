@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="CurrencyDate",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("date", models.DateField(db_index=True, unique=True)),
+                ("date", models.DateField(db_index=True)),
             ],
             options={
                 "verbose_name": "Currency Date",
